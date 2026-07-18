@@ -1,34 +1,59 @@
 #!/bin/bash
 # read-aloud — macOS text-to-speech voice control for Claude Code.
 # Usage: read-aloud <say|play|stop|quiet|pause|resume|continue>
-#
-# Playback is controlled by sending signals to the running `say` process:
-#   pause  -> SIGSTOP, resume -> SIGCONT, stop -> terminate.
-# The text spoken is the latest response saved by save-response.sh (Stop hook).
+# Playback speaks the last response one sentence at a time via a detached
+# player loop; control is per-session and by PID (no SIGSTOP, no global killall).
 
-# Per-session file (must match save-response.sh) so each session speaks its own
-# response; falls back to a shared "default" when no session id is present.
-FILE="$HOME/.claude/read-aloud-last-response-${CLAUDE_CODE_SESSION_ID:-default}.txt"
+SID="${CLAUDE_CODE_SESSION_ID:-default}"
+DIR="$HOME/.claude/read-aloud/$SID"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+SPLIT="$HERE/../scripts/split-sentences.sh"
+PLAYER="$HERE/../scripts/player.sh"
+
+sget() { cat "$DIR/$1" 2>/dev/null; }
+sset() { mkdir -p "$DIR"; printf '%s' "$2" > "$DIR/$1.tmp" && mv "$DIR/$1.tmp" "$DIR/$1"; }
+killpid() { local p; p="$(sget "$1")"; [ -n "$p" ] && kill -0 "$p" 2>/dev/null && kill "$p" 2>/dev/null; }
+next_gen() { echo $(( $(sget generation 2>/dev/null || echo 0) + 1 )); }
 
 case "$1" in
   say|play)
-    killall say 2>/dev/null
-    if [ -s "$FILE" ]; then
-      nohup say -f "$FILE" >/dev/null 2>&1 &
-      disown
-      echo "🔊 Speaking…"
+    if [ ! -s "$DIR/response.txt" ]; then echo "Nothing to speak yet."; exit 0; fi
+    "$SPLIT" < "$DIR/response.txt" > "$DIR/playlist.txt"
+    killpid say.pid
+    gen="$(next_gen)"; sset generation "$gen"; sset status playing; sset index 0
+    nohup "$PLAYER" "$DIR" "$gen" 0 >/dev/null 2>&1 &
+    disown
+    echo "🔊 Speaking…"
+    ;;
+  pause)
+    if [ "$(sget status)" = "playing" ]; then
+      sset status paused
+      killpid say.pid
+      echo "⏸ Paused."
     else
-      echo "Nothing to speak yet."
+      echo "Nothing is playing."
+    fi
+    ;;
+  resume|continue)
+    if [ "$(sget status)" = "paused" ]; then
+      gen="$(next_gen)"; sset generation "$gen"; sset status playing
+      nohup "$PLAYER" "$DIR" "$gen" "$(sget index 2>/dev/null || echo 0)" >/dev/null 2>&1 &
+      disown
+      echo "▶️ Resumed."
+    else
+      echo "Nothing to resume."
     fi
     ;;
   stop|quiet)
-    killall say 2>/dev/null && echo "⏹ Stopped." || echo "Nothing is playing."
-    ;;
-  pause)
-    killall -STOP say 2>/dev/null && echo "⏸ Paused." || echo "Nothing is playing."
-    ;;
-  resume|continue)
-    killall -CONT say 2>/dev/null && echo "▶️ Resumed." || echo "Nothing to resume."
+    st="$(sget status)"
+    if [ "$st" = "playing" ] || [ "$st" = "paused" ]; then
+      sset status stopped
+      killpid say.pid
+      killpid player.pid
+      echo "⏹ Stopped."
+    else
+      echo "Nothing is playing."
+    fi
     ;;
   *)
     echo "Usage: read-aloud <say|play|stop|quiet|pause|resume|continue>"
