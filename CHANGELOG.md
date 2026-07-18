@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-18
+
+### Changed
+- **Reliable `/pause` and `/resume`.** Playback now speaks the response one
+  sentence at a time via a detached per-session player loop, controlled by PID,
+  instead of one `say` process paused with `SIGSTOP`/`SIGCONT` (which macOS
+  CoreAudio would not reliably resume). `/pause` stops immediately; `/resume`
+  replays the interrupted sentence. Also retires the global `killall say`, so
+  controlling one session no longer affects another.
+- Saved state moved to `~/.claude/read-aloud/<session_id>/`.
+
 ## [1.0.1] - 2026-07-18
 
 ### Fixed
@@ -26,5 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the real answer.
 - Marketplace manifest so the plugin is installable via Claude Code.
 
+[1.1.0]: https://github.com/ricardorqr/read-aloud-plugin/releases/tag/v1.1.0
 [1.0.1]: https://github.com/ricardorqr/read-aloud-plugin/releases/tag/v1.0.1
 [1.0.0]: https://github.com/ricardorqr/read-aloud-plugin/releases/tag/v1.0.0
