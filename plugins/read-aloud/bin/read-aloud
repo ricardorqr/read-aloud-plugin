@@ -6,7 +6,9 @@
 #   pause  -> SIGSTOP, resume -> SIGCONT, stop -> terminate.
 # The text spoken is the latest response saved by save-response.sh (Stop hook).
 
-FILE="$HOME/.claude/read-aloud-last-response.txt"
+# Per-session file (must match save-response.sh) so each session speaks its own
+# response; falls back to a shared "default" when no session id is present.
+FILE="$HOME/.claude/read-aloud-last-response-${CLAUDE_CODE_SESSION_ID:-default}.txt"
 
 case "$1" in
   say|play)

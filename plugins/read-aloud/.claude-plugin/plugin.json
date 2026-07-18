@@ -2,7 +2,7 @@
   "name": "read-aloud",
   "displayName": "Read Aloud",
   "description": "Read Claude's responses aloud with macOS text-to-speech, with play / pause / resume / stop voice controls.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "ricardorqr"
   },
