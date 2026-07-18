@@ -7,7 +7,7 @@
 # Reads the hook payload (JSON) on stdin. Requires `jq`; if jq is missing it
 # exits quietly so it never breaks a session.
 
-DIR="$HOME/.claude"
+BASE="$HOME/.claude/read-aloud"
 
 command -v jq >/dev/null 2>&1 || exit 0
 
@@ -15,9 +15,6 @@ payload="$(cat)"
 msg=$(printf '%s' "$payload" | jq -r '.last_assistant_message // empty')
 [ -z "$msg" ] && exit 0
 
-# Key the saved response per session, so two Claude sessions open at once never
-# clobber each other's last response. Prefer the env var; fall back to the hook
-# payload's session_id; last resort a shared "default".
 sid="${CLAUDE_CODE_SESSION_ID:-$(printf '%s' "$payload" | jq -r '.session_id // empty')}"
 [ -z "$sid" ] && sid="default"
 
@@ -26,5 +23,5 @@ case "$msg" in
   "Nothing to speak"*|"Nothing is playing"*|"Nothing to resume"*) exit 0 ;;
 esac
 
-mkdir -p "$DIR"
-printf '%s' "$msg" > "$DIR/read-aloud-last-response-$sid.txt"
+mkdir -p "$BASE/$sid"
+printf '%s' "$msg" > "$BASE/$sid/response.txt"
