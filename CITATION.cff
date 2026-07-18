@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this plugin, please cite it using the metadata below."
+title: "read-aloud — Claude Code Plugin"
+abstract: "Read Claude Code responses aloud on macOS with play/pause/resume/stop voice controls."
+type: software
+authors:
+  - family-names: Ribeiro
+    given-names: Ricardo
+    alias: ricardorqr
+repository-code: "https://github.com/ricardorqr/read-aloud-plugin"
+url: "https://github.com/ricardorqr/read-aloud-plugin"
+license: MIT
+version: "1.0.0"
+date-released: "2026-07-18"
+keywords:
+  - claude-code
+  - text-to-speech
+  - voice
+  - macos
