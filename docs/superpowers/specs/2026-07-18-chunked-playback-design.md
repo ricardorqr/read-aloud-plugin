@@ -98,6 +98,9 @@ player.pid      # PID of the detached player loop
   print `▶️ Resumed.` Else `Nothing to resume.`
 - **stop / quiet** — if `status ∈ {playing,paused}`: `status=stopped`,
   kill `say.pid` and `player.pid`; print `⏹ Stopped.` Else `Nothing is playing.`
+  This ends playback and reaps the player loop; it does not delete
+  `response.txt`/`playlist.txt`/`index` — that residual state is harmless and
+  is rebuilt/reset by the next `/play`.
 
 ### Player loop (`player.sh <dir> <gen> <start>`)
 ```
@@ -158,7 +161,9 @@ pause granularity, not prosody.
   - chunks are spoken in order,
   - `pause` stops within one chunk (log stops growing),
   - `resume` **re-speaks the interrupted chunk** (same chunk appears twice),
-  - `stop` ends playback and clears state.
+  - `stop` **ends playback (`status=stopped`) and reaps the player loop**;
+    it does not clear `response.txt`/`playlist.txt`/`index` — that residual
+    state is harmless and reset on the next `/play`.
 - **session isolation** — the existing `tests/session-isolation.test.sh`
   continues to pass against the new per-session dir.
 

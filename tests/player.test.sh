@@ -8,6 +8,7 @@ DIR="$HOME/.claude/read-aloud/SID"; mkdir -p "$DIR"
 # Stub `say`: log each spoken chunk, then linger briefly.
 cat > "$TMP/bin/say" <<'EOF'
 #!/bin/bash
+[ "$1" = "--" ] && shift
 echo "$*" >> "$HOME/.claude/read-aloud/SID/say.log"
 perl -e 'select(undef,undef,undef,0.15)'
 EOF

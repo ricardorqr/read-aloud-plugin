@@ -27,4 +27,11 @@ maxlen="$(printf '%s\n' "$out" | awk '{ if (length($0) > m) m = length($0) } END
 check "hard-wrap <= 50" "1" "$([ "$maxlen" -le 50 ] && echo 1 || echo 0)"
 check "no word split (all tokens are 'word')" "1" "$(printf '%s\n' "$out" | grep -vqE '^(word)( word)*$' && echo 0 || echo 1)"
 
+# 4) Dash/bullet lines survive splitting unchanged (they must reach player.sh
+# intact so `say -- "$chunk"` speaks them instead of them being dropped).
+out="$(printf -- '- foo.\n- bar.' | bash "$SPLIT")"
+check "bullets -> 2 lines" "2" "$(printf '%s\n' "$out" | grep -c '')"
+check "first bullet" "- foo." "$(printf '%s\n' "$out" | sed -n 1p)"
+check "second bullet" "- bar." "$(printf '%s\n' "$out" | sed -n 2p)"
+
 exit $fail

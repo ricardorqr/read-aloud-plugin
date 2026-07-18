@@ -207,7 +207,7 @@ while :; do
   if [ "$i" -ge "$total" ]; then sset status done; exit 0; fi
   sset index "$i"
   chunk="$(sed -n "$((i+1))p" "$DIR/playlist.txt")"
-  say "$chunk" &
+  say -- "$chunk" &
   spid=$!
   sset say.pid "$spid"
   wait "$spid" 2>/dev/null
