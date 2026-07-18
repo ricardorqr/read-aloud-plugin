@@ -1,0 +1,18 @@
+{
+  "name": "read-aloud",
+  "displayName": "Read Aloud",
+  "description": "Read Claude's responses aloud with macOS text-to-speech, with play / pause / resume / stop voice controls.",
+  "version": "1.0.0",
+  "author": {
+    "name": "ricardorqr"
+  },
+  "homepage": "https://github.com/ricardorqr/read-aloud-plugin",
+  "repository": "https://github.com/ricardorqr/read-aloud-plugin",
+  "keywords": [
+    "text-to-speech",
+    "tts",
+    "voice",
+    "accessibility",
+    "macos"
+  ]
+}

@@ -1,0 +1,34 @@
+#!/bin/bash
+# read-aloud — macOS text-to-speech voice control for Claude Code.
+# Usage: read-aloud <say|play|stop|quiet|pause|resume|continue>
+#
+# Playback is controlled by sending signals to the running `say` process:
+#   pause  -> SIGSTOP, resume -> SIGCONT, stop -> terminate.
+# The text spoken is the latest response saved by save-response.sh (Stop hook).
+
+FILE="$HOME/.claude/read-aloud-last-response.txt"
+
+case "$1" in
+  say|play)
+    killall say 2>/dev/null
+    if [ -s "$FILE" ]; then
+      nohup say -f "$FILE" >/dev/null 2>&1 &
+      disown
+      echo "🔊 Speaking…"
+    else
+      echo "Nothing to speak yet."
+    fi
+    ;;
+  stop|quiet)
+    killall say 2>/dev/null && echo "⏹ Stopped." || echo "Nothing is playing."
+    ;;
+  pause)
+    killall -STOP say 2>/dev/null && echo "⏸ Paused." || echo "Nothing is playing."
+    ;;
+  resume|continue)
+    killall -CONT say 2>/dev/null && echo "▶️ Resumed." || echo "Nothing to resume."
+    ;;
+  *)
+    echo "Usage: read-aloud <say|play|stop|quiet|pause|resume|continue>"
+    ;;
+esac

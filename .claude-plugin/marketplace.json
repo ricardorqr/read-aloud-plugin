@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "read-aloud-marketplace",
+  "description": "Text-to-speech voice control for Claude Code (macOS).",
+  "owner": {
+    "name": "ricardorqr"
+  },
+  "plugins": [
+    {
+      "name": "read-aloud",
+      "description": "Read Claude's responses aloud on macOS with play / pause / resume / stop voice controls. Provides /say, /play, /pause, /resume, /continue, /stop, and /quiet commands, plus a Stop hook that keeps the latest answer ready to replay.",
+      "author": {
+        "name": "ricardorqr"
+      },
+      "category": "productivity",
+      "source": "./plugins/read-aloud"
+    }
+  ]
+}
