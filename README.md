@@ -33,10 +33,29 @@ the `/` menu.
 
 ## Update
 
+Updating is **two steps** — refreshing the marketplace catalog is a prerequisite
+for bumping the plugin. If you only run the second command, a stale marketplace
+clone will silently reinstall the *old* version:
+
 ```
-/plugin marketplace update read-aloud-marketplace
-/plugin install read-aloud@read-aloud-marketplace
+/plugin marketplace update read-aloud-marketplace   # refresh the catalog from GitHub
+/plugin install read-aloud@read-aloud-marketplace    # then install the new version
 ```
+
+### Auto-update
+
+Restarting a session does **not** fetch new versions — it only loads whatever is
+already installed on disk. Auto-update is **per-marketplace**, and third-party
+marketplaces (like this one) have it **off by default**. To turn it on, either:
+
+- toggle it in the `/plugin` **Marketplaces** tab, or
+- set `"autoUpdate": true` on the marketplace in your settings'
+  `extraKnownMarketplaces`, or
+- set `FORCE_AUTOUPDATE_PLUGINS=1` (in your settings `env`) to auto-update
+  **all** plugins regardless of per-marketplace setting.
+
+With auto-update on, Claude Code refreshes in the background shortly after
+startup; new versions load on your next session (or after `/reload-plugins`).
 
 ## Uninstall
 
@@ -95,9 +114,14 @@ It makes **no network connections** — it only reads a local file and runs `say
 stopping playback by killing the specific `say`/player process it started (by
 PID, scoped to the current session — no global `killall`).
 
-For the safest posture, keep **auto-update disabled** and pin to a reviewed
-commit, so new code only ever arrives when you deliberately update. See
-[`CHANGELOG.md`](CHANGELOG.md) for what changed in each version.
+Updating is your choice of posture:
+
+- **Convenience** — enable [auto-update](#auto-update) so fixes and features
+  arrive automatically shortly after they're published.
+- **Safest** — leave auto-update disabled and update deliberately, so new code
+  only ever arrives when you've reviewed it.
+
+See [`CHANGELOG.md`](CHANGELOG.md) for what changed in each version.
 
 ---
 
