@@ -65,15 +65,21 @@ That's it — ask Claude something, then type `/say` to hear the answer.
 ## How it works
 
 - A **Stop hook** (`scripts/save-response.sh`) runs each time Claude finishes a
-  response and saves the text to `~/.claude/read-aloud-last-response.txt`. It
+  response and saves the text to `~/.claude/read-aloud/<session_id>/response.txt`
+  — keyed per session so each open session replays its *own* last answer. It
   deliberately **skips the plugin's own voice-control confirmations** (🔊 / ⏸ /
   ▶️ / ⏹) so they never overwrite the real answer you want to hear.
 - The voice commands call **`bin/read-aloud`** (added to your `PATH` by Claude
   Code), which drives macOS `say`:
-  - `say`/`play` → speak the saved file in the background,
-  - `pause` → `SIGSTOP` the `say` process,
-  - `resume`/`continue` → `SIGCONT`,
-  - `stop`/`quiet` → terminate it.
+  - `say`/`play` → split the saved response into sentence-sized chunks
+    (`scripts/split-sentences.sh`) and speak them one at a time via a detached
+    per-session **player loop** (`scripts/player.sh`),
+  - `pause` → stop the current chunk immediately (kill the `say` process by PID),
+  - `resume`/`continue` → restart the player, replaying the interrupted sentence,
+  - `stop`/`quiet` → stop the player and the current chunk.
+- Playback state lives under `~/.claude/read-aloud/<session_id>/` as one small
+  file per field (status, index, generation, PIDs, playlist), so control is
+  **per session and by PID** — no `SIGSTOP`/`SIGCONT`, and no global `killall`.
 
 Because the commands only ever invoke the bundled `read-aloud` script (declared
 in each command's `allowed-tools`), they run without touching your other
@@ -85,8 +91,9 @@ again for `read-aloud`"** and it stays quiet after that.
 ## Security & updates
 
 This plugin runs a small bundled shell script on your machine (like any plugin).
-It makes **no network connections** — it only reads a local file and runs
-`say` / `killall say` (the `killall` is hardcoded to target only `say`).
+It makes **no network connections** — it only reads a local file and runs `say`,
+stopping playback by killing the specific `say`/player process it started (by
+PID, scoped to the current session — no global `killall`).
 
 For the safest posture, keep **auto-update disabled** and pin to a reviewed
 commit, so new code only ever arrives when you deliberately update. See
@@ -107,7 +114,9 @@ read-aloud-plugin/
         ├── bin/
         │   └── read-aloud               # voice-control dispatcher (on PATH)
         ├── scripts/
-        │   └── save-response.sh         # Stop-hook helper (saves last response)
+        │   ├── save-response.sh         # Stop-hook helper (saves last response)
+        │   ├── split-sentences.sh       # splits a response into speakable chunks
+        │   └── player.sh                # detached per-session chunk player loop
         ├── hooks/
         │   └── hooks.json               # registers the Stop hook
         └── commands/
