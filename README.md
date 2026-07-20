@@ -28,7 +28,7 @@ Add the marketplace once, then install the plugin:
 ```
 
 Restart Claude Code (or start a new session) and confirm the voice commands
-(`/say`, `/play`, `/pause`, `/resume`, `/continue`, `/stop`, `/quiet`) appear in
+(`/play`, `/say`, `/pause`, `/resume`, `/continue`, `/stop`, `/quiet`) appear in
 the `/` menu.
 
 ## Update
@@ -53,12 +53,12 @@ the `/` menu.
 
 | Command | What it does |
 |---|---|
-| `/say`, `/play` | Read Claude's most recent response aloud (restarts cleanly if already playing) |
+| `/play`, `/say` | Read Claude's most recent response aloud (restarts cleanly if already playing) |
 | `/pause` | Pause playback where it is |
 | `/resume`, `/continue` | Resume from where you paused |
 | `/stop`, `/quiet` | Stop playback completely |
 
-That's it — ask Claude something, then type `/say` to hear the answer.
+That's it — ask Claude something, then type `/play` to hear the answer.
 
 ---
 
@@ -71,7 +71,7 @@ That's it — ask Claude something, then type `/say` to hear the answer.
   ▶️ / ⏹) so they never overwrite the real answer you want to hear.
 - The voice commands call **`bin/read-aloud`** (added to your `PATH` by Claude
   Code), which drives macOS `say`:
-  - `say`/`play` → split the saved response into sentence-sized chunks
+  - `play`/`say` → split the saved response into sentence-sized chunks
     (`scripts/split-sentences.sh`) and speak them one at a time via a detached
     per-session **player loop** (`scripts/player.sh`),
   - `pause` → stop the current chunk immediately (kill the `say` process by PID),
