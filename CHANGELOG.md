@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/ricardorqr/read-aloud-plugin/compare/v1.1.0...v1.1.1) (2026-07-21)
+
+### Bug Fixes
+
+* guard lifecycle test sandbox against mktemp failure ([1fc5e1c](https://github.com/ricardorqr/read-aloud-plugin/commit/1fc5e1cb989a8b553f1b5425f158e49673d681eb))
+
 # Changelog
 
 All notable changes to this project are documented in this file.
