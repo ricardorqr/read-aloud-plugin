@@ -80,3 +80,27 @@ out="$(bash "$BIN" resume)"; [ "$out" = "▶️ Resumed." ] || fail "resume said
 out="$(bash "$BIN" stop)";   [ "$out" = "⏹ Stopped." ]  || fail "stop said '$out'"
 
 echo "PASS: installed commands produce the correct output strings"
+
+# --- Uninstall + removal assertions: every installed file must be gone -------
+claude plugin uninstall "$PLUGIN_ID" </dev/null >/dev/null 2>&1 \
+  || fail "plugin uninstall failed"
+
+claude plugin list 2>/dev/null | grep -q "read-aloud@read-aloud-marketplace" \
+  && fail "plugin still listed after uninstall"
+
+IP="$CLAUDE_CONFIG_DIR/plugins/installed_plugins.json"
+if [ -f "$IP" ]; then
+  grep -q "read-aloud@read-aloud-marketplace" "$IP" \
+    && fail "installed_plugins.json still has a read-aloud entry after uninstall"
+fi
+
+# Cache version dir removed, OR soft-deleted (.orphaned_at marker tolerated —
+# happens only when another live session holds an in-use ref; not expected in
+# this fresh sandbox, so a hard delete is the normal outcome).
+if [ -d "$CACHE" ]; then
+  [ -f "$CACHE/.orphaned_at" ] \
+    || fail "cache dir still present without a soft-delete marker after uninstall"
+fi
+
+echo "PASS: uninstall removes the plugin (list + installed_plugins.json + all files)"
+echo "PASS: full lifecycle (install -> verify -> run -> uninstall -> verify) complete"
