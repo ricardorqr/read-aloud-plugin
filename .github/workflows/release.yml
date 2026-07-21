@@ -34,3 +34,9 @@ jobs:
             conventional-changelog-conventionalcommits
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Author the chore(release) commit as the repo owner, not
+          # semantic-release-bot, so no bot appears in the contributors list.
+          GIT_AUTHOR_NAME: Ricardo Ribeiro
+          GIT_AUTHOR_EMAIL: ricardorqr@gmail.com
+          GIT_COMMITTER_NAME: Ricardo Ribeiro
+          GIT_COMMITTER_EMAIL: ricardorqr@gmail.com
