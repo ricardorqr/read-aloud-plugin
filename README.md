@@ -1,5 +1,7 @@
 # read-aloud — Claude Code Plugin
 
+[![CI](https://github.com/ricardorqr/read-aloud-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/ricardorqr/read-aloud-plugin/actions/workflows/ci.yml)
+
 A Claude Code plugin that reads Claude's responses **aloud** using macOS
 text-to-speech, with full playback control — **play, pause, resume, and stop** —
 right from the `/` menu.

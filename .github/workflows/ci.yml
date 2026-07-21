@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    name: Bash test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Runs every tests/*.test.sh. The unit/integration tests run for real;
+      # tests/lifecycle.test.sh auto-SKIPs (exit 0) because the `claude` CLI is
+      # not on PATH here — it stays a local-only integration check. `say` is
+      # stubbed inside each test, so no macOS audio backend is needed.
+      - name: Run test suite
+        run: |
+          fail=0
+          for t in tests/*.test.sh; do
+            echo "== $t =="
+            bash "$t" || fail=1
+          done
+          exit $fail
