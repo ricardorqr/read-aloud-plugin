@@ -116,13 +116,6 @@ It makes **no network connections** — it only reads a local file and runs `say
 stopping playback by killing the specific `say`/player process it started (by
 PID, scoped to the current session — no global `killall`).
 
-Updating is your choice of posture:
-
-- **Convenience** — enable [auto-update](#auto-update) so fixes and features
-  arrive automatically shortly after they're published.
-- **Safest** — leave auto-update disabled and update deliberately, so new code
-  only ever arrives when you've reviewed it.
-
 See [`CHANGELOG.md`](CHANGELOG.md) for what changed in each version.
 
 ---
