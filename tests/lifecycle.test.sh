@@ -15,7 +15,10 @@ command -v claude >/dev/null 2>&1 || { echo "SKIP: claude CLI not on PATH"; exit
 git ls-remote "$GH_URL" >/dev/null 2>&1 || { echo "SKIP: GitHub unreachable ($GH_URL)"; exit 0; }
 
 # --- Isolation: sandbox HOME + claude config dir, always cleaned up ---------
-SANDBOX="$(mktemp -d)"; trap 'rm -rf "$SANDBOX"' EXIT
+# Guard mktemp: an empty SANDBOX would make the cleanup trap a no-op and let
+# HOME collapse to "/home", so bail rather than run unsandboxed.
+SANDBOX="$(mktemp -d)" || { echo "FAIL: could not create sandbox dir"; exit 1; }
+trap 'rm -rf "$SANDBOX"' EXIT
 export HOME="$SANDBOX/home"; mkdir -p "$HOME"
 export CLAUDE_CONFIG_DIR="$HOME/.claude"
 
